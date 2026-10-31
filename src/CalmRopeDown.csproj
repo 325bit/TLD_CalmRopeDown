@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <RootNamespace>CalmRopeDown</RootNamespace>
+    <AssemblyName>CalmRopeDown</AssemblyName>
+    <Version>1.3.0</Version>
+    <Nullable>disable</Nullable>
+    <!-- 游戏路径（实际游玩的安装）：构建后自动复制到 Mods 目录 -->
+    <GameDir>F:\GameAbouts\The Long Dark\TheLongDark_2.55</GameDir>
+    <OutDir>$(MSBuildThisFileDirectory)build\</OutDir>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MelonLoader 运行时与 Harmony -->
+    <Reference Include="MelonLoader">
+      <HintPath>$(GameDir)\MelonLoader\net6\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDir)\MelonLoader\net6\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(GameDir)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- 游戏程序集编译面（stblade 2.55 互操作程序集，命名空间 Il2Cpp） -->
+    <Reference Include="Assembly-CSharp">
+      <HintPath>C:\Users\Passacaglia\.nuget\packages\stblade.modding.tld.il2cppassemblies.windows\2.55.0\lib\net6.0\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- ModSettings 框架（游戏内配置面板，Mods\ModSettings.dll，全局命名空间） -->
+    <Reference Include="ModSettings">
+      <HintPath>$(GameDir)\Mods\ModSettings.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- 构建完成后复制 DLL 到游戏 Mods 目录 -->
+  <Target Name="DeployToGame" AfterTargets="Build">
+    <Copy SourceFiles="$(OutDir)$(AssemblyName).dll"
+          DestinationFolder="$(GameDir)\Mods\"
+          Condition="Exists('$(GameDir)\Mods')" />
+    <Message Importance="high"
+             Text="已部署到 $(GameDir)\Mods\$(AssemblyName).dll"
+             Condition="Exists('$(GameDir)\Mods\$(AssemblyName).dll')" />
+  </Target>
+
+</Project>
